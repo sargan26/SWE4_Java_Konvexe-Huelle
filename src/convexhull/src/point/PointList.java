@@ -1,5 +1,4 @@
 package point;
-import point.Point;
 
 public class PointList {
     private Point[] points;
