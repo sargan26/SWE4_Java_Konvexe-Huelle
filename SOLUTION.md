@@ -65,3 +65,6 @@ Testen der Kombination von unify und convexHull
 Testen von trivialen Fällen
 ![](doc/test11.png)
 ![](doc/test12.png)
+
+build-and-run Skript
+![](doc/test13.png)
