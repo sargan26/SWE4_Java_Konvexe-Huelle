@@ -9,24 +9,23 @@ public class PointList {
         this.size = 0;
         points = new Point[0];
     }
-    // Erzeugt eine leere Punktliste mit Kapazität 0.
+    // Creates an empty point list with a capacity of 0.
 
     public PointList(int capacity) {
         this.size = 0;
         points = new Point[capacity];
-
     }
-    // Erzeugt eine leere Punktliste mit Kapazität capacity.
+    // Creates an empty point list with the specified capacity.
 
     public int capacity() {
         return points.length;
     }
-    // Gibt die Kapazität der Punktliste zurück
+    // Returns the capacity of the point list.
 
     public int size() {
         return size;
     }
-    // Gibt die Größe der Punktliste zurück.
+    // Returns the size of the point list.
 
     public void changeCapacity(int newCapacity) {
         Point[] newPoints = new Point[newCapacity];
@@ -38,8 +37,8 @@ public class PointList {
         }
         points = newPoints;
     }
-    // Verändert die Kapazität der Punktliste. newCapacity kann
-    // größer als, kleiner als oder gleich wie die alte Kapazität sein.
+    // Changes the capacity of the point list. newCapacity can be greater than, less than,
+    // or equal to the old capacity.
 
     public void add(Point p) {
         if (size + 1 > capacity()) {
@@ -48,12 +47,11 @@ public class PointList {
             } else {
                 changeCapacity(capacity() * 2);
             }
-            //System.out.println("Changed capacity when adding a point. New capacity = " + this.capacity());
         }
         points[size] = p;
         size++;
     }
-    // Fügt einen Punkt zur Menge hinzu. Erhöht bei Bedarf die Kapazität.
+    // Adds a point to the set. Increases capacity if necessary.
 
     public Point get(int i) {
         if (i >= 0 && i < size) {
@@ -62,8 +60,7 @@ public class PointList {
             throw new IndexOutOfBoundsException("Index " + i + " out of bounds for PointList of size " + size);
         }
     }
-    // Liefert den i-ten Punkt der Menge.
-
+    // Retrieves the i-th point of the set.
 
     public PointList unify(PointList other) {
         if (other == null) {
@@ -83,74 +80,71 @@ public class PointList {
         }
         return newPointList;
     }
-    // Vereinigt diese Punktliste mit der Punktliste other und gibt eine
-    // neue Punktliste zurück.
+    // Unifies this point list with another point list and returns a new point list.
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < size; i++) {
             sb.append(points[i]);
-            sb.append(",");
+            if (i < size - 1) {
+                sb.append(", ");
+            }
         }
-        sb.deleteCharAt(sb.length()-1);
         sb.append("]");
-    // Erzeugt einen String der Form [(x1,y1), ..., (xn,yn)].
         return sb.toString();
     }
+    // Creates a string in the format [(x1,y1), ..., (xn,yn)].
 
-    // Ermittelt die konvexe Menge der Punktliste.
-    // Die zurückgegebene Punktliste enthält die Punkte der konvexen Hülle.
-    // Die Punkte sind im Gegenuhrzeigersinn sortiert.
     public PointList convexHull() {
-        if (size < 3) return null; // Eine konvexe Hülle ist nicht möglich mit weniger als 3 Punkten
+        if (size < 3) return null; // A convex hull is not possible with less than 3 points.
 
         PointList hull = new PointList();
 
-        // Finde den am weitesten links liegenden Punkt
+        // Find the point furthest to the left
         int l = 0;
-        for (int i = 1; i < size; i++)
-            if (points[i].getX() < points[l].getX())
+        for (int i = 1; i < size; i++) {
+            if (points[i].getX() < points[l].getX()) {
                 l = i;
+            }
+        }
 
-        // Starte vom am weitesten links liegenden Punkt, bewege dich gegen den Uhrzeigersinn
-        // bis du wieder zum Startpunkt kommst
+        // Start from the leftmost point, move counterclockwise until you return to the start point
         int p = l, q;
         do {
             points[p].setLabel('O');
             hull.add(points[p]);
 
-            // Suche nach einem Punkt 'q', so dass die Orientierung(p, x, q) gegen den Uhrzeigersinn ist
-            // für alle Punkte 'x'
+            // Search for a point 'q' such that orientation(p, x, q) is counterclockwise
+            // for all points 'x'
             q = (p + 1) % size;
             for (int i = 0; i < size; i++) {
                 if (orientation(points[p], points[i], points[q]) == 2)
                     q = i;
             }
 
-            // Jetzt ist q der am weitesten gegen den Uhrzeigersinn in Bezug auf p
-            // Setze p als q für die nächste Iteration, so dass q zum Ergebnis 'hull' hinzugefügt wird
+            // Now q is the most counterclockwise with respect to p
+            // Set p as q for the next iteration so that q is added to the result 'hull'
             p = q;
 
-        } while (p != l);  // Solange wir nicht zum ersten Punkt kommen
+        } while (p != l);  // While we don't come to the first point.
 
         return hull;
     }
+    // Determines the convex set of the point list.
+    // The returned point list contains the points of the convex hull, sorted counterclockwise.
 
-    // Eine Hilfsfunktion, um die Orientierung des geordneten Tripels (p, q, r) zu finden.
-    // 0 --> p, q und r sind kolinear
-    // 1 --> Im Uhrzeigersinn
-    // 2 --> Gegen den Uhrzeigersinn
+    // A helper function to find the orientation of the ordered triplet (p, q, r).
+    // 0 --> p, q, and r are collinear
+    // 1 --> Clockwise
+    // 2 --> Counterclockwise
     public int orientation(Point p, Point q, Point r) {
         int val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
                 (q.getX() - p.getX()) * (r.getY() - q.getY());
 
-        if (val == 0) return 0;  // kolinear
-        return (val > 0)? 1: 2; // im oder gegen den Uhrzeigersinn
+        if (val == 0) return 0;  // collinear
+        return (val > 0) ? 1 : 2; // clock or counterclockwise
     }
-
-
-
 
     public String toAsciiGraphic(int width, int height) {
         char[][] grid = new char[height][width];
@@ -160,7 +154,7 @@ public class PointList {
             }
         }
 
-        // Finden der Grenzen der Punkte, um die Skalierung zu berechnen
+        // Find the bounds of the points to calculate scaling
         int maxX = 1;
         int maxY = 1;
         for (Point point : points) {
@@ -170,11 +164,11 @@ public class PointList {
             }
         }
 
-        // Skalierungsfaktoren berechnen
+        // Calculate scaling factors
         double scaleX = maxX > 1 ? (double)(width - 1) / maxX : 1;
         double scaleY = maxY > 1 ? (double)(height - 1) / maxY : 1;
 
-        // Punkte auf das Raster anwenden
+        // Apply points to the grid
         for (Point point : points) {
             if (point != null) {
                 int scaledX = (int)(point.getX() * scaleX);
@@ -183,7 +177,7 @@ public class PointList {
             }
         }
 
-        // Erstellung der ASCII-Grafik als String
+        // Creating the ASCII graphic as a string
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
